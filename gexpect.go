@@ -446,7 +446,7 @@ func _spawn(command string) (*ExpectSubprocess, error) {
 		wrapper.Cmd = exec.Command(path)
 	}
 	wrapper.Cmd.SysProcAttr = &syscall.SysProcAttr{
-		Setctty: true,
+		Setctty: false,
 	}
 	wrapper.buf = new(buffer)
 
