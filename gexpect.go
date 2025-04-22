@@ -1,3 +1,4 @@
+//go:build !windows
 // +build !windows
 
 package gexpect
@@ -10,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"syscall"
 	"time"
 	"unicode/utf8"
 
@@ -387,7 +389,7 @@ func (expect *ExpectSubprocess) ReadUntil(delim byte) ([]byte, error) {
 		for i := 0; i < n; i++ {
 			if chunk[i] == delim {
 				if len(chunk) > i+1 {
-					expect.buf.PutBack(chunk[i+1:n])
+					expect.buf.PutBack(chunk[i+1 : n])
 				}
 				return join, nil
 			} else {
@@ -442,6 +444,9 @@ func _spawn(command string) (*ExpectSubprocess, error) {
 		wrapper.Cmd = exec.Command(path, splitArgs[1:]...)
 	} else {
 		wrapper.Cmd = exec.Command(path)
+	}
+	wrapper.Cmd.SysProcAttr = &syscall.SysProcAttr{
+		Setctty: true,
 	}
 	wrapper.buf = new(buffer)
 
